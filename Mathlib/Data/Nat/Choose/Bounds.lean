@@ -57,6 +57,20 @@ lemma choose_le_pow (n k : ℕ) : n.choose k ≤ n ^ k :=
 lemma choose_lt_pow (hn : n ≠ 0) (hk : 2 ≤ k) : n.choose k < n ^ k :=
   (choose_le_descFactorial n k).trans_lt (descFactorial_lt_pow hn hk)
 
+theorem pow_mul_choose_le_pow_mul_choose {m n r : ℕ} (hrm : r ≤ m) (hmn : m ≤ n) :
+    n ^ r * m.choose r ≤ m ^ r * n.choose r := by
+  have hdesc := Nat.pow_mul_descFactorial_le_pow_mul_descFactorial hrm hmn
+  rw [Nat.descFactorial_eq_factorial_mul_choose,
+    Nat.descFactorial_eq_factorial_mul_choose] at hdesc
+  have hmul : r ! * (n ^ r * m.choose r) ≤ r ! * (m ^ r * n.choose r) := by
+    calc
+      r ! * (n ^ r * m.choose r) = n ^ r * (r ! * m.choose r) := by
+        ac_rfl
+      _ ≤ m ^ r * (r ! * n.choose r) := hdesc
+      _ = r ! * (m ^ r * n.choose r) := by
+        ac_rfl
+  exact Nat.le_of_mul_le_mul_left hmul (Nat.factorial_pos r)
+
 -- horrific casting is due to ℕ-subtraction
 theorem pow_le_choose (r n : ℕ) : ((n + 1 - r : ℕ) ^ r : α) / r ! ≤ n.choose r := by
   rw [div_le_iff₀']

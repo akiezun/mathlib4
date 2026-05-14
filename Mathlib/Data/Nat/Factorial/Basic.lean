@@ -406,6 +406,24 @@ theorem descFactorial_le (n : ℕ) {k m : ℕ} (h : k ≤ m) :
     rw [descFactorial_succ, descFactorial_succ]
     exact Nat.mul_le_mul (Nat.sub_le_sub_right h n) ih
 
+theorem pow_mul_descFactorial_le_pow_mul_descFactorial {m n r : ℕ} (hrm : r ≤ m)
+    (hmn : m ≤ n) : n ^ r * m.descFactorial r ≤ m ^ r * n.descFactorial r := by
+  induction r with
+  | zero => simp
+  | succ r ih =>
+    calc
+      n ^ (r + 1) * m.descFactorial (r + 1)
+          = (n ^ r * m.descFactorial r) * (n * (m - r)) := by
+            simp [pow_succ', Nat.descFactorial_succ, Nat.mul_assoc, Nat.mul_left_comm,
+              Nat.mul_comm]
+      _ ≤ (m ^ r * n.descFactorial r) * (m * (n - r)) := by
+            exact Nat.mul_le_mul (ih (Nat.le_of_succ_le hrm)) <| by
+              rw [Nat.mul_sub_left_distrib, Nat.mul_sub_left_distrib, Nat.mul_comm m n]
+              exact Nat.sub_le_sub_left (Nat.mul_le_mul_right r hmn) (n * m)
+      _ = m ^ (r + 1) * n.descFactorial (r + 1) := by
+            simp [pow_succ', Nat.descFactorial_succ, Nat.mul_assoc, Nat.mul_left_comm,
+              Nat.mul_comm]
+
 theorem pow_sub_le_descFactorial (n : ℕ) : ∀ k : ℕ, (n + 1 - k) ^ k ≤ n.descFactorial k
   | 0 => by rw [descFactorial_zero, Nat.pow_zero]
   | k + 1 => by
