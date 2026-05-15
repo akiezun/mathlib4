@@ -419,6 +419,12 @@ lemma cancel_left_of_coprime (hmc : gcd m c = 1) (h : c * a ≡ c * b [MOD m]) :
 lemma cancel_right_of_coprime (hmc : gcd m c = 1) (h : a * c ≡ b * c [MOD m]) : a ≡ b [MOD m] :=
   cancel_left_of_coprime hmc <| by simpa [mul_comm] using h
 
+lemma eq_of_add_mul_right_of_coprime_of_lt
+    (h : n + a * c ≡ n + b * c [MOD m]) (hmc : gcd m c = 1) (ha : a < m)
+    (hb : b < m) : a = b := by
+  have hmul : a * c ≡ b * c [MOD m] := ModEq.add_left_cancel' n h
+  exact (cancel_right_of_coprime hmc hmul).eq_of_lt_of_lt ha hb
+
 end ModEq
 
 /-- The natural number less than `lcm n m` congruent to `a` mod `n` and `b` mod `m` -/
